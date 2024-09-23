@@ -1,0 +1,13 @@
+http://internal.api.ekerdev.local.com {
+    reverse_proxy /job-api/* private-jobs-api:3000 {
+        method GET
+    }
+    reverse_proxy /user-api/* private-users-api:3000 {
+        method GET
+    }
+}
+
+http://private-proxy {
+    reverse_proxy /job-api/* private-jobs-api:3000
+    reverse_proxy /user-api/* private-users-api:3000
+}

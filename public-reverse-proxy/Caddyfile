@@ -1,0 +1,17 @@
+http://api.ekerdev.local.com {
+    reverse_proxy http://private-proxy:80 {
+        header_up Host internal.api.ekerdev.local.com
+    }
+}
+
+http://ekerdev.local.com {
+    reverse_proxy public-web-users:3000
+}
+
+http://jobs.ekerdev.local.com {
+    reverse_proxy public-web-jobs:3000
+}
+
+http:// {
+    error "Not found" 404
+}

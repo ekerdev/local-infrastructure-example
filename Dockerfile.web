@@ -1,0 +1,10 @@
+FROM public.ecr.aws/docker/library/node:alpine
+
+WORKDIR /app
+
+COPY dist dist
+COPY server server
+COPY node_modules node_modules
+COPY package.json package.json
+
+CMD ["npm", "run", "serve"]

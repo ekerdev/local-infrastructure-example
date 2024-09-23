@@ -1,0 +1,59 @@
+services:
+  public-proxy:
+    image: public.ecr.aws/docker/library/caddy:2.8.4
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./public-reverse-proxy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - private-proxy
+      - public-web-users
+      - public-web-jobs
+    networks:
+      - subnet-public
+      - subnet-private
+  public-web-users:
+    build:
+      context: public-web-users
+      dockerfile: ../Dockerfile.web
+    restart: always
+    networks:
+      - subnet-private
+  public-web-jobs:
+    build:
+      context: public-web-jobs
+      dockerfile: ../Dockerfile.web
+    restart: always
+    networks:
+      - subnet-private
+  private-proxy:
+    image: public.ecr.aws/docker/library/caddy:2.8.4
+    restart: always
+    volumes:
+      - ./private-reverse-proxy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - private-jobs-api
+      - private-users-api
+    networks:
+      - subnet-private
+  private-jobs-api:
+    build:
+      context: private-backend-jobs
+      dockerfile: ../Dockerfile.node
+    restart: always
+    networks:
+      - subnet-private
+  private-users-api:
+    build:
+      context: private-backend-users
+      dockerfile: ../Dockerfile.node
+    restart: always
+    networks:
+      - subnet-private
+
+networks:
+  subnet-private:
+    driver: bridge
+  subnet-public:
+    driver: bridge
